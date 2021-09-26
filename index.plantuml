@@ -1,0 +1,133 @@
+@startuml
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam DefaultTextAlignment center
+skinparam ArrowColor Black
+
+skinparam rectangle {
+  BackgroundColor Bisque
+  BorderColor DimGray
+  }
+
+skinparam package {
+  BorderColor transparent 
+  FontColor transparent
+  }
+
+skinparam note {
+  BorderColor transparent 
+  FontColor Gray
+  BackgroundColor LightGray 
+  }
+skinparam collections {
+  BorderColor gray 
+  }
+
+package "Group 1" {
+  [//Google Analytics//] as Analytics 
+  [//Google BigQuery//] as BigQuery
+  [//Google FireBase//] as FireBase
+  [//--AppsFlyer--//] as AppsFlyer
+  [//--HotJar--//] as HotJar
+  }
+
+[//Segment Stream//] as Segment #White
+["Хранилка"\n//DDM//] as DDM #White
+[сайт letu.ru] as Site #White
+
+[Дэшборд\n//MS Power BI//] as Dash #White
+[Аналитика] as Analitics #White
+artifact "Аналитический отчет" as AnalitReport #White
+"Топ менеджер" as Manager
+
+package "Микросервисы" as Microservices {
+  [Интеллектуальные\nфункции анализа] as IntellFunctions
+  database "DS Reveiews" as DS
+  collections "UGC. Raiting & Reviews\nK8s" as UGC
+  }
+[Модерация отзывов \n BCC] as ModReview #White
+
+package "Group 2" {
+  [NARS]
+  [Купоны\n//BBC//] as Coupons #White
+  [Опросник\n//BBC//] as Questionnaire #White
+  [//ENDECA//] as ENDECA #White
+  note right of Questionnaire : <size:20> <&document>
+  note bottom of Questionnaire : <size:20> <&envelope-closed>
+  } 
+
+package "Group 3" as group3 {
+  collections "Опросник \n+ еще несколько (до 30) \n//BCC//" as Quest #White
+  [Опросник \n SCENT BIBLIOTHEQUE\n//BCC//] as QuestSB #White
+  [Email рассылки\nс опросом после каждой\nвыдачи заказа.\n//BCC//] as EmailBCC #White
+  }
+rectangle "Group 4" as group4  #White{
+  [Email рассылки\nс опросом после каждой\nвыдачи заказа.\n//Анкетолог//] as EmailAnketolog
+  [Источники ATG, НДК\n Сегментация клиентов\nкампании email, sms\n//CRM SAS Studio//] as CrmSasStudio
+  [Push в МП,\n персонализация\n баннеров\n//CRM SAS 360//] as CrmSas360
+  [Работизированные\nобзвоны после заказа\n//Подрядчик//] as Calls
+  
+  [Отзывы из сторов -\nвыгрузили все отзывы.\nКатегоризация\n"вручную"\n//Apple Store//] as AppStore
+  [Отзывы из сторов -\n выгрузили все отызвы.\nКатегоризация\n"вручную"\nGoogle Play] as GoodlePlay
+  [Отзывы из сторов\nAppGallery] as AppGallery
+  
+  [Отзывы по товарам\nBCC -> //Микросервис//] as MicroService
+  collections "Отзывы на Yandex\nMarket и др ?" as YandexEtc
+  [Отзывы на горячую линию\nОтчет раз в месяц] as LetSystems #Thistle
+  }
+
+Analytics -[hidden]d-> BigQuery
+BigQuery -[hidden]d-> FireBase
+FireBase -[hidden]d-> AppsFlyer
+AppsFlyer -[hidden]d-> HotJar
+
+Quest -[hidden]d-> QuestSB
+QuestSB -[hidden]d-> EmailBCC
+EmailBCC -[hidden]d-> EmailAnketolog
+EmailAnketolog -[hidden]d-> CrmSasStudio
+CrmSasStudio -[hidden]d-> CrmSas360
+CrmSas360 -[hidden]d-> Calls
+Calls -[hidden]d-> AppStore
+AppStore -[hidden]d-> GoodlePlay
+GoodlePlay -[hidden]d-> AppGallery
+AppGallery -[hidden]d-> MicroService
+MicroService -[hidden]d-> YandexEtc
+YandexEtc -[hidden]d-> LetSystems
+
+Analytics -r-> Segment
+BigQuery -r-> Segment
+Segment -u-> DDM 
+DDM -u-> Site
+
+Dash --> BigQuery
+Dash -l-> FireBase
+Dash -l-> AppsFlyer
+Dash -l-> HotJar
+
+Analitics -u-> Dash
+AnalitReport -u-> Analitics
+AnalitReport -u-> Dash
+Manager .u.> AnalitReport
+
+UGC --> Site
+ModReview --> UGC
+UGC .. DS
+DS .. IntellFunctions
+DS .. Dash
+
+NARS --> Questionnaire #Gray
+Coupons --> Questionnaire #Gray
+ENDECA --> Questionnaire #Gray
+
+Questionnaire --> Quest
+Questionnaire --> QuestSB #Gray
+Questionnaire --> EmailBCC #Gray
+
+EmailAnketolog .u.> EmailBCC
+
+UGC --> group4
+UGC --> MicroService #Gray
+
+
+@enduml
